@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>መጫኛው | Free YouTube Downloader</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="icon" href="images/logo.png">
+
+    <!-- Your CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <main>
+    <!-- Navigation -->
+
+    <header>
+
+        <nav class="navbar">
+    
+            <div class="brand">
+    
+                <a href="index.html">
+    
+                    <img src="images/logo.png" alt="Mechagnaw Logo">
+    
+                </a>
+    
+                <span>መጫኛው</span>
+    
+            </div>
+    
+            <ul class="nav-links">
+    
+                <li><a id="navHome" href="index.html">Home</a></li>
+
+                <li><a id="navFAQ" href="faq.html">FAQ</a></li>
+
+                <li><a id="navAbout" href="about.html">About</a></li>
+    
+            </ul>
+    
+            <div class="nav-actions">
+    
+                <button id="themeBtn">🌙</button>
+    
+                <select id="language">
+    
+                    <option>EN</option>
+    
+                    <option>AM</option>
+    
+                </select>
+    
+            </div>
+    
+        </nav>
+    
+    </header>
+
+    <!-- Hero Section -->
+
+    <section class="hero">
+
+        <h1 id="heroTitle">Download YouTube Videos</h1>
+
+        <p id="heroSubtitle">
+        Paste a YouTube link below to download it as MP4 or MP3.</p>
+
+        <div class="download-box">
+
+            <input
+                id="urlInput"
+                type="text"
+                placeholder="Paste YouTube URL here">
+        
+            <button id="pasteBtn">
+        
+                📋 Paste
+        
+            </button>
+        
+            <button id="downloadBtn">
+        
+                ⬇ Download
+        
+            </button>
+        
+        </div>
+
+        <p id="message"></p>
+
+        <div id="progressContainer" class="hidden">
+
+            <div id="progressBar"></div>
+        
+        </div>
+
+        <div id="loader" class="loader hidden"></div>
+
+        <div id="videoCard" class="video-card hidden">
+
+            <img id="thumbnail">
+            
+            <h2 id="videoTitle"></h2>
+            
+            <p>
+                <strong>Channel:</strong>
+                <span id="channelName"></span>
+            </p>
+            
+            <p>
+                <strong>Duration:</strong>
+                <span id="duration"></span>
+            </p>
+
+            <div class="qualities" id="qualities"></div>
+            
+            </div>
+
+    </section>
+
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/script.js"></script>
+</main>
+
+    <footer>
+
+        <p>
+    
+            © 2026 Mechagnaw
+    
+        </p>
+    
+        <p>
+    
+            Developed by <strong>NatnaelG</strong>
+    
+        </p>
+    
+        <p>
+    
+            All Rights Reserved.
+    
+        </p>
+    
+    </footer>
+
+</body>
+
+</html>
