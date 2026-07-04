@@ -7,9 +7,9 @@ const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);
 
-app.use(express.json());
+const PORT = process.env.PORT || 3000;
 
-const PORT = process.env.PORT;
+app.use(express.json());
 
 // Tell Express where the website files are
 app.use(express.static("public"));
@@ -57,7 +57,7 @@ setInterval(async () => {
 
 // Start server
 http.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+    console.log(`🚀 Mechagnaw server started on port ${PORT}`);
 });
 
 
