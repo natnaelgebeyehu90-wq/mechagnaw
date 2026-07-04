@@ -120,7 +120,7 @@ if (type === "audio") {
 
 }
 
-const process = spawn("py", args);
+const process = spawn("python3", args);
 
 process.stdout.on("data", (data) => {
 
@@ -190,7 +190,7 @@ process.stderr.on("data", (data) => {
 
 exports.testYtDlp = (req, res) => {
 
-    const process = spawn("py", [
+    const process = spawn("python3", [
         "-m",
         "yt_dlp",
         "--version"
