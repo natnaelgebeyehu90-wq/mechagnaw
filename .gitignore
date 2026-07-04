@@ -1,3 +1,8 @@
 node_modules/
-downloads/
 .env
+downloads/
+
+*-player-script.js
+*.part
+*.temp
+*.tmp
