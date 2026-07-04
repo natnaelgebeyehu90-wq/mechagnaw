@@ -2,10 +2,14 @@ const { spawn } = require("child_process");
 
 const cache = new Map();
 
+const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
+
 exports.getVideoInfo = (url) => {
 
-    if (cache.has(url)) {
-        return cache.get(url);
+    const cached = cache.get(url);
+
+    if (cached && Date.now() - cached.time < CACHE_TIME) {
+    return Promise.resolve(cached.data);
     }
 
     return new Promise((resolve, reject) => {
@@ -42,11 +46,12 @@ exports.getVideoInfo = (url) => {
                 const info = JSON.parse(output);
 
                 const formats = info.formats
-                    .filter(f =>
-                        f.vcodec !== "none" &&
-                        f.acodec !== "none" &&
-                        f.height
-                    )
+            
+                .filter(f =>
+                    f.vcodec !== "none" &&
+                    f.height &&
+                    f.ext === "mp4"
+                )
                     .map(f => ({
                         quality: f.height + "p",
                         container: f.ext,
@@ -57,19 +62,22 @@ exports.getVideoInfo = (url) => {
 
                 const seen = new Set();
 
-                formats.forEach(f => {
-
-                    const key = f.quality + "-" + f.container;
-
+                formats
+                .sort((a, b) => parseInt(a.quality) - parseInt(b.quality))
+                .forEach(f => {
+                
+                    const key = f.quality;
+                
                     if (!seen.has(key)) {
-
+                
                         seen.add(key);
-
+                
                         uniqueFormats.push(f);
-
+                
                     }
-
+                
                 });
+
 
                 const audio = info.formats
                     .filter(f =>
@@ -106,7 +114,10 @@ exports.getVideoInfo = (url) => {
                     
                     };
                     
-                    cache.set(url, result);
+                    cache.set(url, {
+                    time: Date.now(),
+                    data: result
+                    });
                     
                     resolve(result);
 

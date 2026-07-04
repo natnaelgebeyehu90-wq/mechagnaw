@@ -202,6 +202,7 @@ socket.on("download-progress", (data) => {
 
     progressContainer.classList.remove("hidden");
 
+    progressBar.style.transition = "width 0.4s ease";
     progressBar.style.width = data.percent + "%";
 
     message.style.color = "blue";

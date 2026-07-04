@@ -100,10 +100,21 @@ if (type === "audio") {
     args = [
         "-m",
         "yt_dlp",
+    
+        "--newline",
+
         "-f",
-        `best[height<=${quality.replace("p","")}]`,
+        `bestvideo[height<=${quality.replace("p","")}]+bestaudio`,
+    
+        "--merge-output-format",
+        "mp4",
+    
+        "--ffmpeg-location",
+        "C:\\Users\\FUJITSU\\AppData\\Local\\Microsoft\\WinGet\\Links",
+    
         "-o",
         output,
+    
         url
     ];
 
@@ -148,7 +159,13 @@ process.stderr.on("data", (data) => {
     process.on("close", async (code) => {
 
         if (code !== 0) {
-            return res.status(500).send("Download failed.");
+            return res.status(500).json({
+
+                success:false,
+            
+                message:"Unable to download this video. It may be private, age-restricted, temporarily unavailable, or blocked by YouTube."
+            
+            });
         }
 
         const files = await fs.readdir(path.join(__dirname, "..", "downloads"));
