@@ -1,14 +1,13 @@
 {
   "name": "mechagnaw",
   "version": "1.0.0",
-  "description": "Mechagnaw YouTube Downloader",
+  "description": "Free YouTube Video and Audio Downloader",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "NatnaelG",
-  "license": "ISC",
+  "author": "Natnael",
+  "license": "MIT",
   "type": "commonjs",
   "dependencies": {
     "dotenv": "^17.4.2",
