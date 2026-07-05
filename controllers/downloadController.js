@@ -199,6 +199,8 @@ exports.testYtDlp = (req, res) => {
     const process = spawn(PYTHON, [
         "-m",
         "yt_dlp",
+        "--cookies",
+        "/app/cookies.txt",
         "--version"
     ]);
 

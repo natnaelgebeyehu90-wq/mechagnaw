@@ -22,6 +22,8 @@ exports.getVideoInfo = (url) => {
         const process = spawn(PYTHON, [
             "-m",
             "yt_dlp",
+            "--cookies",
+            "/app/cookies.txt",
             "--dump-single-json",
             "--no-playlist",
             "--no-warnings",
