@@ -150,5 +150,3 @@ exports.getVideoInfo = (url) => {
     });
 
 };
-
-console.log("Cookies exist:", fs.existsSync("/app/cookies.txt"));
