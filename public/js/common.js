@@ -24,3 +24,22 @@ if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark");
 
 }
+
+
+const logo = document.querySelector(".brand img");
+
+if (logo) {
+
+    logo.addEventListener("click", () => {
+
+        logo.classList.add("bounce");
+
+        setTimeout(() => {
+
+            logo.classList.remove("bounce");
+
+        },600);
+
+    });
+
+}
