@@ -30,8 +30,6 @@ exports.getVideoInfo = (url) => {
 
         const fs = require("fs");
 
-        console.log("Cookies exist:", fs.existsSync("/app/cookies.txt"));
-
         const process = spawn(PYTHON, [
             "-m",
             "yt_dlp",
@@ -152,3 +150,5 @@ exports.getVideoInfo = (url) => {
     });
 
 };
+
+console.log("Cookies exist:", fs.existsSync("/app/cookies.txt"));

@@ -91,6 +91,8 @@ if (type === "audio") {
     args = [
         "-m",
         "yt_dlp",
+        "--cookies",
+        COOKIE_FILE,
         "-x",
         "--audio-format",
         "mp3",
@@ -103,9 +105,16 @@ if (type === "audio") {
 
 } else {
 
-    args = [
-        "-m",
-        "yt_dlp",
+    const COOKIE_FILE =
+    process.platform === "win32"
+        ? "cookies.txt"
+        : "/app/cookies.txt";
+
+  args = [
+    "-m",
+    "yt_dlp",
+    "--cookies",
+    COOKIE_FILE,
     
         "--newline",
 
