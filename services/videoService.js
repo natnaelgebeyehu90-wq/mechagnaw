@@ -1,5 +1,10 @@
 const { spawn } = require("child_process");
 
+const PYTHON =
+    process.platform === "win32"
+        ? "py"
+        : "python3";
+
 const cache = new Map();
 
 const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
@@ -14,7 +19,7 @@ exports.getVideoInfo = (url) => {
 
     return new Promise((resolve, reject) => {
 
-        const process = spawn("py", [
+        const process = spawn(PYTHON, [
             "-m",
             "yt_dlp",
             "--dump-single-json",

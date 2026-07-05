@@ -1,4 +1,10 @@
 const { spawn } = require("child_process");
+
+const PYTHON =
+    process.platform === "win32"
+        ? "py"
+        : "python3";
+
 const path = require("path");
 const fs = require("fs-extra");
 const { getVideoInfo } = require("../services/videoService");
@@ -120,7 +126,7 @@ if (type === "audio") {
 
 }
 
-const process = spawn("python3", args);
+const process = spawn(PYTHON, args);
 
 process.stdout.on("data", (data) => {
 
@@ -190,7 +196,7 @@ process.stderr.on("data", (data) => {
 
 exports.testYtDlp = (req, res) => {
 
-    const process = spawn("python3", [
+    const process = spawn(PYTHON, [
         "-m",
         "yt_dlp",
         "--version"
