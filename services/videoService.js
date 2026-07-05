@@ -17,13 +17,26 @@ exports.getVideoInfo = (url) => {
     return Promise.resolve(cached.data);
     }
 
+    const fs = require("fs");
+
+    const COOKIE_FILE =
+        process.platform === "win32"
+            ? "cookies.txt"
+            : "/app/cookies.txt";
+    
+    console.log("Cookies exist:", fs.existsSync(COOKIE_FILE));
+
     return new Promise((resolve, reject) => {
+
+        const fs = require("fs");
+
+        console.log("Cookies exist:", fs.existsSync("/app/cookies.txt"));
 
         const process = spawn(PYTHON, [
             "-m",
             "yt_dlp",
             "--cookies",
-            "/app/cookies.txt",
+            COOKIE_FILE,
             "--dump-single-json",
             "--no-playlist",
             "--no-warnings",
