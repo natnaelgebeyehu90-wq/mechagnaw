@@ -1,4 +1,6 @@
 const { spawn } = require("child_process");
+const path = require("path");
+
 
 const PYTHON =
     process.platform === "win32"
@@ -7,9 +9,9 @@ const PYTHON =
 
 const cache = new Map();
 
-const path = require("path");
-
 const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
+
+const fs = require("fs");
 
 exports.getVideoInfo = (url) => {
 
@@ -19,15 +21,11 @@ exports.getVideoInfo = (url) => {
     return Promise.resolve(cached.data);
     }
 
-    const fs = require("fs");
-
     const COOKIE_FILE = path.join(__dirname, "..", "cookies.txt");
     
     console.log("Cookies exist:", fs.existsSync(COOKIE_FILE));
 
     return new Promise((resolve, reject) => {
-
-        const fs = require("fs");
 
         const process = spawn(PYTHON, [
             "-m",

@@ -1,4 +1,8 @@
 const { spawn } = require("child_process");
+const path = require("path");
+const fs = require("fs-extra");
+
+const { getVideoInfo } = require("../services/videoService");
 
 const PYTHON =
     process.platform === "win32"
@@ -15,9 +19,6 @@ const FFMPEG_ARGS =
         ]
         : [];
 
-const path = require("path");
-const fs = require("fs-extra");
-const { getVideoInfo } = require("../services/videoService");
 
 exports.downloadVideo = async (req, res) => {
 
