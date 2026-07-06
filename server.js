@@ -3,6 +3,24 @@ const downloadRoutes = require("./routes/downloadRoutes");
 const express = require("express");
 const path = require("path");
 
+const fs = require("fs");
+
+// Create cookies.txt from Railway environment variable
+if (process.env.YOUTUBE_COOKIES) {
+
+    fs.writeFileSync(
+        path.join(__dirname, "cookies.txt"),
+        process.env.YOUTUBE_COOKIES
+    );
+
+    console.log("✅ cookies.txt created");
+
+} else {
+
+    console.log("⚠ No YOUTUBE_COOKIES variable found.");
+
+}
+
 const app = express();
 const http = require("http").createServer(app);
 const io = require("socket.io")(http);

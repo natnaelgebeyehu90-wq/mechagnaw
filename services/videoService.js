@@ -7,6 +7,8 @@ const PYTHON =
 
 const cache = new Map();
 
+const path = require("path");
+
 const CACHE_TIME = 10 * 60 * 1000; // 10 minutes
 
 exports.getVideoInfo = (url) => {
@@ -19,10 +21,7 @@ exports.getVideoInfo = (url) => {
 
     const fs = require("fs");
 
-    const COOKIE_FILE =
-        process.platform === "win32"
-            ? "cookies.txt"
-            : "/app/cookies.txt";
+    const COOKIE_FILE = path.join(__dirname, "..", "cookies.txt");
     
     console.log("Cookies exist:", fs.existsSync(COOKIE_FILE));
 

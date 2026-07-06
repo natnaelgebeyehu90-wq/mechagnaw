@@ -5,11 +5,21 @@ const PYTHON =
         ? "py"
         : "python3";
 
+const COOKIE_FILE = path.join(__dirname, "..", "cookies.txt");
+
+const FFMPEG_ARGS =
+    process.platform === "win32"
+        ? [
+            "--ffmpeg-location",
+            "C:\\Users\\FUJITSU\\AppData\\Local\\Microsoft\\WinGet\\Links"
+        ]
+        : [];
+
 const path = require("path");
 const fs = require("fs-extra");
 const { getVideoInfo } = require("../services/videoService");
 
-exports.downloadVideo = async (req,res)=>{
+exports.downloadVideo = async (req, res) => {
 
     const { url } = req.body;
 
@@ -33,22 +43,18 @@ exports.downloadVideo = async (req,res)=>{
     try {
 
         const result = await getVideoInfo(url);
-    
+
         res.json(result);
-    
-    }
-    catch(error){
-    
+
+    } catch (error) {
+
         console.error(error);
-    
+
         res.json({
-    
-            success:false,
-    
-            message:"Unable to get video information."
-    
+            success: false,
+            message: "Unable to get video information."
         });
-    
+
     }
 
 };
@@ -58,9 +64,7 @@ exports.streamVideo = async (req, res) => {
     const url = req.query.url;
 
     if (!url) {
-
         return res.status(400).send("No URL provided.");
-
     }
 
     res.send("Received URL: " + url);
@@ -69,7 +73,7 @@ exports.streamVideo = async (req, res) => {
 
 exports.downloadFile = async (req, res) => {
 
-    const { url, quality, bitrate, type } = req.query;
+    const { url, quality = "720p", type } = req.query;
 
     const io = req.app.get("io");
 
@@ -84,144 +88,186 @@ exports.downloadFile = async (req, res) => {
         "%(title)s.%(ext)s"
     );
 
-    let args;
+    let args = [];
 
-if (type === "audio") {
+    if (type === "audio") {
 
-    args = [
-        "-m",
-        "yt_dlp",
-        "--cookies",
-        COOKIE_FILE,
-        "-x",
-        "--audio-format",
-        "mp3",
-        "--ffmpeg-location",
-        "C:\\Users\\FUJITSU\\AppData\\Local\\Microsoft\\WinGet\\Links",
-        "-o",
-        output,
-        url
-    ];
+        args = [
+            "-m",
+            "yt_dlp",
 
-} else {
+            "--cookies",
+            COOKIE_FILE,
 
-    const COOKIE_FILE =
-    process.platform === "win32"
-        ? "cookies.txt"
-        : "/app/cookies.txt";
+            "-x",
+            "--audio-format",
+            "mp3",
 
-  args = [
-    "-m",
-    "yt_dlp",
-    "--cookies",
-    COOKIE_FILE,
-    
-        "--newline",
+            ...FFMPEG_ARGS,
 
-        "-f",
-        `bestvideo[height<=${quality.replace("p","")}]+bestaudio`,
-    
-        "--merge-output-format",
-        "mp4",
-    
-        "--ffmpeg-location",
-        "C:\\Users\\FUJITSU\\AppData\\Local\\Microsoft\\WinGet\\Links",
-    
-        "-o",
-        output,
-    
-        url
-    ];
+            "-o",
+            output,
 
-}
+            url
+        ];
 
-const process = spawn(PYTHON, args);
+    } else {
 
-process.stdout.on("data", (data) => {
+        const cleanQuality = quality.replace("p", "");
 
-    const text = data.toString();
+        args = [
+            "-m",
+            "yt_dlp",
 
-    console.log(text);
+            "--cookies",
+            COOKIE_FILE,
 
-    const match = text.match(
-        /(\d+(?:\.\d+)?)%.*?at\s+([^\s]+).*?ETA\s+([0-9:]+)/
-    );
+            "--newline",
 
-    if (match) {
+            "-f",
+            `bestvideo[height<=${cleanQuality}]+bestaudio/best[height<=${cleanQuality}]`,
 
-        io.emit("download-progress", {
+            "--merge-output-format",
+            "mp4",
 
-            percent: Number(match[1]),
+            ...FFMPEG_ARGS,
 
-            speed: match[2],
+            "-o",
+            output,
 
-            eta: match[3]
-
-        });
+            url
+        ];
 
     }
 
-});
+    const childProcess = spawn(PYTHON, args);
 
-process.stdout.on("data", (data) => {
-    console.log(data.toString());
-});
+    childProcess.stdout.on("data", (data) => {
 
-process.stderr.on("data", (data) => {
-    console.error(data.toString());
-});
+        const text = data.toString();
 
-    process.on("close", async (code) => {
+        console.log(text);
 
-        if (code !== 0) {
-            return res.status(500).json({
+        const match = text.match(
+            /(\d+(?:\.\d+)?)%.*?at\s+([^\s]+).*?ETA\s+([0-9:]+)/
+        );
 
-                success:false,
-            
-                message:"Unable to download this video. It may be private, age-restricted, temporarily unavailable, or blocked by YouTube."
-            
+        if (match) {
+
+            io.emit("download-progress", {
+
+                percent: Number(match[1]),
+
+                speed: match[2],
+
+                eta: match[3]
+
             });
+
         }
 
-        const files = await fs.readdir(path.join(__dirname, "..", "downloads"));
+    });
 
-        const latestFile = files
-            .map(file => ({
-                file,
-                time: fs.statSync(path.join(__dirname, "..", "downloads", file)).mtime.getTime()
-            }))
-            .sort((a, b) => b.time - a.time)[0];
+    childProcess.stderr.on("data", (data) => {
 
-        const filePath = path.join(__dirname, "..", "downloads", latestFile.file);
+        console.error(data.toString());
 
-        res.download(filePath, latestFile.file, async () => {
-            await fs.remove(filePath);
-        });
+    });
+
+    childProcess.on("close", async (code) => {
+
+        if (code !== 0) {
+
+            return res.status(500).json({
+
+                success: false,
+
+                message: "Unable to download this video. It may be private, age-restricted, temporarily unavailable, or blocked by YouTube."
+
+            });
+
+        }
+
+        try {
+
+            const downloadsDir = path.join(__dirname, "..", "downloads");
+
+            const files = await fs.readdir(downloadsDir);
+
+            if (files.length === 0) {
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    message: "Downloaded file not found."
+
+                });
+
+            }
+
+            const latestFile = files
+                .map(file => ({
+                    file,
+                    time: fs.statSync(path.join(downloadsDir, file)).mtime.getTime()
+                }))
+                .sort((a, b) => b.time - a.time)[0];
+
+            const filePath = path.join(downloadsDir, latestFile.file);
+
+            res.download(filePath, latestFile.file, async () => {
+
+                await fs.remove(filePath);
+
+            });
+
+        } catch (err) {
+
+            console.error(err);
+
+            if (!res.headersSent) {
+
+                res.status(500).send("File download failed.");
+
+            }
+
+        }
 
     });
 
 };
 
-
 exports.testYtDlp = (req, res) => {
 
-    const process = spawn(PYTHON, [
+    const childProcess = spawn(PYTHON, [
+
         "-m",
+
         "yt_dlp",
+
         "--cookies",
-        "/app/cookies.txt",
+
+        COOKIE_FILE,
+
         "--version"
+
     ]);
 
     let output = "";
 
-    process.stdout.on("data", (data) => {
+    childProcess.stdout.on("data", (data) => {
 
         output += data.toString();
 
     });
 
-    process.on("close", () => {
+    childProcess.stderr.on("data", (data) => {
+
+        console.error(data.toString());
+
+    });
+
+    childProcess.on("close", () => {
 
         res.send(output);
 
