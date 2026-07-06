@@ -43,27 +43,27 @@ app.use("/api", downloadRoutes);
 
 app.set("io", io);
 
-const fs = require("fs-extra");
+const fsExtra = require("fs-extra");
 
 setInterval(async () => {
 
     const folder = path.join(__dirname, "downloads");
 
-    if (!(await fs.pathExists(folder))) return;
+    if (!(await fsExtra.pathExists(folder))) return;
 
-    const files = await fs.readdir(folder);
+    const files = await fsExtra.readdir(folder);
 
     for (const file of files) {
 
         const filePath = path.join(folder, file);
 
-        const stat = await fs.stat(filePath);
+        const stat = await fsExtra.stat(filePath);
 
         const age = Date.now() - stat.mtimeMs;
 
         if (age > 30 * 60 * 1000) {
 
-            await fs.remove(filePath);
+            await fsExtra.remove(filePath);
 
             console.log("Deleted:", file);
 
